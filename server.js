@@ -1,56 +1,61 @@
-'use strict'
+'use strict';
 
-const hapi = require('@hapi/hapi');
-const serverConfig = require('./config/dev.json'); 
-const cluster = require('cluster');
-const numCPUs = require('os').cpus().length;
-global.response = require('./response/responses');
-global.constant  = require('./constant/constant.json');
-global.moment = require('moment');
+const Hapi = require('@hapi/hapi');
+const H2o2 = require('@hapi/h2o2');
 
-const configurations = async(server) => {
-    await require('./settings/prepare').configure()
-    await require('./settings/db').configure()
-    await require('./settings/main').configure(server)
-    // await require('./settings/i18n').configure(server)
-    await require('./settings/swagger').configure(server)
-}
-
-
-if (cluster.isMaster) {
-    console.log(`Master ${process.pid} is running`);
-    for (let i = 0; i < numCPUs; i++) {
-      cluster.fork();
+const init = async () => {
+  const server = Hapi.server({
+    port: 5003,
+    host: '0.0.0.0',
+    routes: {
+      cors: true
     }
-  
-    cluster.on('exit', (worker, code, signal) => {
-      console.log(`worker ${worker.process.pid} died`);
-    });
-  } else {
-     const server = new hapi.server({
-        port: process.env.PORT || serverConfig.webServer.port,
-        host: serverConfig.host,
-        routes: {
-            cors: {
-                origin: ['*'],
-                additionalHeaders: ['x-access-token'],
-                additionalExposedHeaders: ['x-access-token']
-            }
-        }
-    })
-    configurations(server)
-  }
+  });
 
+  await server.register(H2o2);
+
+  // Proxy /admin/* to Admin Service (assumed running on localhost:5004)
+  server.route({
+    method: '*',
+    path: '/api/v1/admin/{path*}',
+    handler: {
+      proxy: {
+        host: 'localhost',
+        port: 5004,
+        protocol: 'http',
+        passThrough: true
+      }
+    }
+  });
+
+  // Proxy /company/* to Company Service (assumed running on localhost:5005)
+  server.route({
+    method: '*',
+    path: '/api/v1/company/{path*}',
+    handler: {
+      proxy: {
+        host: 'localhost',
+        port: 5005,
+        protocol: 'http',
+        passThrough: true
+      }
+    }
+  });
+
+  // Add a healthcheck or default route
+  server.route({
+    method: 'GET',
+    path: '/',
+    handler: () => ({ status: 'Gateway running' })
+  });
+
+  await server.start();
+  console.log(`API Gateway running at: ${server.info.uri}`);
+};
 
 process.on('unhandledRejection', (err) => {
-    console.log('bin:server:unhandledRejection')
-    console.log(err)
-    process.exit(1)
-})
+  console.error(err);
+  process.exit(1);
+});
 
-
-
-
-
-
-
+init();

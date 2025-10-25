@@ -10,25 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@hapi/cookie": "^11.0.2",
-    "@hapi/inert": "^6.0.3",
-    "@hapi/jwt": "^3.0.0",
-    "@hapi/vision": "^6.0.1",
-    "@open-age/logger": "^1.4.0",
-    "app-root-path": "^3.0.0",
-    "async": "^3.2.0",
-    "cluster": "^0.7.7",
-    "fs": "0.0.1-security",
-    "g": "^2.0.1",
-    "hapi-i18n": "^3.0.1",
-    "hapi-locale-i18n": "^1.0.15",
-    "hapi-swagger": "^14.1.0",
-    "joi": "^17.4.0",
-    "jsonwebtoken": "^9.0.2",
-    "logging": "^3.3.0",
-    "md5": "^2.3.0",
-    "moment": "^2.29.1",
-    "mongoose": "^8.18.2",
-    "nodemon": "^3.1.10"
+    "@hapi/h2o2": "^10.0.4",
+    "@hapi/hapi": "^21.4.3"
   }
 }
