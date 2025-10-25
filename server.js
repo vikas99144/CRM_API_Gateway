@@ -14,7 +14,6 @@ const init = async () => {
 
   await server.register(H2o2);
 
-  // Proxy /admin/* to Admin Service (assumed running on localhost:5004)
   server.route({
     method: '*',
     path: '/api/v1/admin/{path*}',
@@ -28,7 +27,6 @@ const init = async () => {
     }
   });
 
-  // Proxy /company/* to Company Service (assumed running on localhost:5005)
   server.route({
     method: '*',
     path: '/api/v1/company/{path*}',
@@ -42,7 +40,6 @@ const init = async () => {
     }
   });
 
-  // Add a healthcheck or default route
   server.route({
     method: 'GET',
     path: '/',
