@@ -1,16 +1,17 @@
 {
-  "name": "demouryde",
+  "name": "api_gateway",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@hapi/h2o2": "^10.0.4",
-    "@hapi/hapi": "^21.4.3"
+    "cors": "^2.8.5",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "http-proxy-middleware": "^3.0.5"
   }
 }

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package company;
+
+// Company Service
+service CompanyService {
+  rpc GetCompany (CompanyRequest) returns (CompanyResponse);
+}
+
+message CompanyRequest {
+  string id = 1;
+}
+
+message CompanyResponse {
+  string id = 1;
+  string companyName = 2;
+}

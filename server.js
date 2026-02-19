@@ -1,61 +1,55 @@
 'use strict';
 
-const Hapi = require('@hapi/hapi');
-const H2o2 = require('@hapi/h2o2');
+import cluster from 'cluster';
+import os from 'os';
+import express from 'express';
+import cors from 'cors';
+import http from 'http';
 
-const init = async () => {
-  const server = Hapi.server({
-    port: 5003,
-    host: '0.0.0.0',
-    routes: {
-      cors: true
-    }
+import { limiter } from "./middlewares/rateLimit.middleware.js";
+import indexRoutes from './routes/index.js';
+
+const PORT = 5003;
+const CPU_COUNT = os.cpus().length;
+
+
+if (cluster.isPrimary) {
+
+  console.log(`Primary process ${process.pid} is running`);
+  console.log(`Forking ${CPU_COUNT} workers...\n`);
+
+  for (let i = 0; i < CPU_COUNT; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', (worker, code, signal) => {
+    console.log(`Worker ${worker.process.pid} died. Restarting...`);
+    cluster.fork();
   });
 
-  await server.register(H2o2);
+} else {
 
-  // Proxy /admin/* to Admin Service (assumed running on localhost:5004)
-  server.route({
-    method: '*',
-    path: '/api/v1/admin/{path*}',
-    handler: {
-      proxy: {
-        host: 'localhost',
-        port: 5004,
-        protocol: 'http',
-        passThrough: true
-      }
-    }
+  const app = express();
+
+  app.use(cors());
+  app.use(express.json());
+
+  app.use(limiter);
+
+  app.use('/api/v1/', indexRoutes);
+
+  app.get('/', (req, res) => {
+    res.json({
+      status: 'gRPC Gateway running',
+      worker: process.pid
+    });
   });
 
-  // Proxy /company/* to Company Service (assumed running on localhost:5005)
-  server.route({
-    method: '*',
-    path: '/api/v1/company/{path*}',
-    handler: {
-      proxy: {
-        host: 'localhost',
-        port: 5005,
-        protocol: 'http',
-        passThrough: true
-      }
-    }
+
+  const server = http.createServer(app);
+
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Worker ${process.pid} started on port ${PORT}`);
   });
 
-  // Add a healthcheck or default route
-  server.route({
-    method: 'GET',
-    path: '/',
-    handler: () => ({ status: 'Gateway running' })
-  });
-
-  await server.start();
-  console.log(`API Gateway running at: ${server.info.uri}`);
-};
-
-process.on('unhandledRejection', (err) => {
-  console.error(err);
-  process.exit(1);
-});
-
-init();
+}
