@@ -4,11 +4,11 @@ import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
 
 const packageDefinition = protoLoader.loadSync('./proto/admin.proto');
-const adminProto = grpc.loadPackageDefinition(packageDefinition).admin;
+const authProto = grpc.loadPackageDefinition(packageDefinition).admin;
 
-const adminClient = new adminProto.AdminService(
-  'localhost:5004',
+const authClient = new authProto.AdminService(
+  'localhost:5000',
   grpc.credentials.createInsecure()
 );
 
-export default adminClient;
+export default authClient;
