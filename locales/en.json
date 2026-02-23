@@ -1,0 +1,68 @@
+{
+  "USER": {
+    "REQUIRED": {
+      "code": "USER_001",
+      "message": "User is required"
+    },
+    "NOT_FOUND": {
+      "code": "USER_002",
+      "message": "User not found"
+    },
+    "INVALID_ID": {
+      "code": "USER_003",
+      "message": "Invalid user ID"
+    }
+  },
+
+  "NAME": {
+    "REQUIRED": {
+      "code": "USER_004",
+      "message": "Name is required"
+    },
+    "MIN_LENGTH": {
+      "code": "USER_005",
+      "message": "Name must be at least 3 characters"
+    },
+    "MAX_LENGTH": {
+      "code": "USER_006",
+      "message": "Name must not exceed 50 characters"
+    }
+  },
+
+  "EMAIL": {
+    "REQUIRED": {
+      "code": "USER_007",
+      "message": "Email is required"
+    },
+    "INVALID": {
+      "code": "USER_008",
+      "message": "Invalid email format"
+    },
+    "ALREADY_EXISTS": {
+      "code": "USER_009",
+      "message": "Email already exists"
+    }
+  },
+
+  "PASSWORD": {
+    "REQUIRED": {
+      "code": "USER_010",
+      "message": "Password is required"
+    },
+    "MIN_LENGTH": {
+      "code": "USER_011",
+      "message": "Password must be at least 6 characters"
+    },
+    "WEAK": {
+      "code": "USER_012",
+      "message": "Password must contain uppercase, lowercase and number"
+    }
+  },
+
+  "PHONE": {
+    "INVALID": {
+      "code": "USER_013",
+      "message": "Invalid phone number"
+    }
+  }
+}
